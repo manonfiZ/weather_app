@@ -1,5 +1,5 @@
 import 'package:app_weather/configs/provider_manager.dart';
-import 'package:app_weather/screens/home.dart';
+import 'package:app_weather/screens/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_weather/configs/storage_manager.dart';
@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
         title: 'Weather App',
         theme: ThemeData(
           useMaterial3: true,
-          fontFamily: 'Comfortaa',
+          fontFamily: 'Poppins',
         ),
         home: const MyHomePage(),
       ),
