@@ -3,8 +3,9 @@ import 'package:app_weather/screens/locations.dart';
 import 'package:flutter/material.dart';
 
 class ScreenHeader extends StatelessWidget {
+  final String location;
   const ScreenHeader({
-    super.key,
+    super.key, required this.location,
   });
 
   @override
@@ -39,9 +40,9 @@ class ScreenHeader extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  const Text(
-                    'New York',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                   Text(
+                    location,
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   )
                 ],
               ),

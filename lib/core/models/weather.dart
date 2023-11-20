@@ -6,13 +6,13 @@ import 'dart:convert';
 
 Weather weatherFromJson(String str) => Weather.fromJson(json.decode(str));
 
-
 class Weather {
   String latitude;
   String longitude;
   String resolvedAddress;
   String address;
   String timezone;
+  double tzoffset;
   String description;
   List<CurrentConditions> days;
   CurrentConditions currentConditions;
@@ -23,6 +23,7 @@ class Weather {
     required this.resolvedAddress,
     required this.address,
     required this.timezone,
+    required this.tzoffset,
     required this.description,
     required this.days,
     required this.currentConditions,
@@ -34,6 +35,7 @@ class Weather {
         resolvedAddress: json["resolvedAddress"],
         address: json["address"],
         timezone: json["timezone"],
+        tzoffset: json["tzoffset"],
         description: json["description"],
         days: List<CurrentConditions>.from(
             json["days"].map((x) => CurrentConditions.fromJson(x))),

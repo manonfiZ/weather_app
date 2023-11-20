@@ -1,5 +1,6 @@
 
 import 'package:app_weather/core/models/weather.dart';
+import 'package:app_weather/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class WeekSection extends StatelessWidget {
@@ -12,6 +13,7 @@ class WeekSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    daysData.removeAt(0);  // ! Remove today
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
@@ -28,7 +30,7 @@ class WeekSection extends StatelessWidget {
             (data) => Expanded(
               child: WeekItem(
                 icon: data.icon,
-                day: data.datetime,
+                day: MyDateUtils.formatStringDate(data.datetime, format: 'E d'),
                 temperature: data.temp,
                 wind: '${data.windspeed} - ${data.windgust}',
               ),

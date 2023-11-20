@@ -5,8 +5,11 @@ import 'package:app_weather/screens/home/_partials/date_section.dart';
 import 'package:app_weather/screens/home/_partials/details_section.dart';
 import 'package:app_weather/screens/home/_partials/header.dart';
 import 'package:app_weather/screens/home/_partials/week_section.dart';
+import 'package:app_weather/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -25,6 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     _getWeather();
+    _getCurrentPosition();
   }
 
   @override
@@ -45,11 +49,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-              color: Colors.black.withOpacity(.33),
+              color: Colors.black.withOpacity(.5),
             ),
             FutureBuilder(
-              future: Future.delayed(
-                  const Duration(seconds: 1), () => _getWeather()),
+              future: _getWeather(),
               builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -68,10 +71,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 }
                 Weather weather = snapshot.data;
+
                 return SingleChildScrollView(
                   child: Column(
                     children: [
-                      const ScreenHeader()
+                       ScreenHeader(location: weather.address,)
                           .animate()
                           .moveY(duration: 800.ms, begin: -50, end: 0)
                           .fadeIn(duration: 800.ms),
@@ -79,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       DateSection(
                         date: weather.days.first.datetime,
                         time: weather.currentConditions.datetime,
+                        tzoffset: weather.tzoffset,
                       ).animate().fadeIn(duration: 800.ms),
                       const SizedBox(height: 30),
                       ConditionSection(
@@ -93,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         windSpeed: weather.currentConditions.windspeed,
                       ).animate().fadeIn(duration: 800.ms),
                       const SizedBox(height: 30),
-                      WeekSection(daysData: weather.days.take(4).toList())
+                      WeekSection(daysData: weather.days.take(5).toList())
                           .animate()
                           .moveY(duration: 800.ms, begin: 50, end: 0)
                           .fadeIn(duration: 800.ms),
@@ -111,5 +116,39 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Weather?> _getWeather() async {
     WeatherModel weatherModel = Provider.of(context, listen: false);
     return await weatherModel.getWeather('location');
+  }
+
+  Future<void> _getCurrentPosition() async {
+    final hasPermission =
+        await LocationService.handleLocationPermission(context);
+
+    if (!hasPermission) return;
+
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      print('========> ${position.toJson()}');
+      _getAddressFromLatLng(position);
+      // setState(() => _currentPosition = position);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<void> _getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    ).then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+
+      print('=====> ${place.toJson()}');
+      // setState(() {
+      //   _currentAddress =
+      //      '${place.street}, ${place.subLocality},
+      //       ${place.subAdministrativeArea}, ${place.postalCode}';
+      // });
+    }).catchError((e) {
+      debugPrint(e);
+    });
   }
 }

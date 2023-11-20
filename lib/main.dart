@@ -1,17 +1,14 @@
 import 'package:app_weather/configs/provider_manager.dart';
+import 'package:app_weather/screens/checkout.dart';
 import 'package:app_weather/screens/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_weather/configs/storage_manager.dart';
 
 void main() async {
-  try {
     WidgetsFlutterBinding.ensureInitialized();
     await StorageManager.init();
     runApp(const MyApp());
-  } catch (e) {
-    debugPrint(e.toString());
-  }
 }
 
 class MyApp extends StatefulWidget {
@@ -27,14 +24,13 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: providers,
       child: MaterialApp(
-        // routerConfig: RouterManager.router,
         debugShowCheckedModeBanner: false,
         title: 'Weather App',
         theme: ThemeData(
           useMaterial3: true,
           fontFamily: 'Poppins',
         ),
-        home: const MyHomePage(),
+        home: const Checkout(),
       ),
     );
   }
