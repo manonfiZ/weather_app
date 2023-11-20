@@ -3,6 +3,8 @@ import 'package:app_weather/core/viewmodel/location_model.dart';
 import 'package:app_weather/core/viewmodel/weather_model.dart';
 // import 'package:app_weather/screens/checkout.dart';
 import 'package:app_weather/screens/home/home.dart';
+// import 'package:device_preview/device_preview.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_weather/configs/storage_manager.dart';
@@ -10,7 +12,13 @@ import 'package:app_weather/configs/storage_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await StorageManager.init();
-  runApp(const MyApp());
+  runApp(
+     const MyApp()
+    // DevicePreview(
+    //   enabled:  !kReleaseMode,
+    //   builder: (context) => const MyApp(),
+    // ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -25,11 +33,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-          ChangeNotifierProvider(create: (_) => WeatherModel()),
-  ChangeNotifierProvider(create: (_) => LocationModel()),
+        ChangeNotifierProvider(create: (_) => WeatherModel()),
+        ChangeNotifierProvider(create: (_) => LocationModel()),
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: true,
+        debugShowCheckedModeBanner: false,
         title: 'Weather App',
         theme: ThemeData(
           useMaterial3: true,

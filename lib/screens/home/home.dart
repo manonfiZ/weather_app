@@ -9,6 +9,9 @@ import 'package:app_weather/screens/home/_partials/details_section.dart';
 import 'package:app_weather/screens/home/_partials/header.dart';
 import 'package:app_weather/screens/home/_partials/week_section.dart';
 import 'package:app_weather/services/location_service.dart';
+import 'package:app_weather/widget/error_widget.dart';
+import 'package:app_weather/widget/loading_widget.dart';
+import 'package:app_weather/widget/no_internet_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:geocoding/geocoding.dart';
@@ -28,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
 
   String? _currentAddress;
-  bool _isConnected = true;
+  bool _isConnected = false;
   StreamSubscription<InternetConnectionStatus>? listener;
 
   @override
@@ -59,12 +62,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("----------------> ${_isConnected}");
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
             Container(
-              color: Colors.red,
+              // color: Colors.red,
               child: Image.asset(
                 'assets/images/london.png',
                 alignment: Alignment.center,
@@ -76,33 +80,20 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.black.withOpacity(.5),
             ),
             !_isConnected
-                ? const Center(
-                    child: Text('No internet'),
-                  )
+                ? const NoInternetWidget()
                 : FutureBuilder(
                     future: _init(),
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator.adaptive(
-                            backgroundColor: Colors.white,
-                          ),
-                        );
+                        return const LoadingWidget();
                       }
 
                       if (snapshot.hasError) {
-                        return SingleChildScrollView(
-                          child: Text(
-                            snapshot.error.toString(),
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 18),
-                          ),
-                        );
+                        return  const MyErrorWidget();
                       }
 
                       Weather weather = snapshot.data;
-
                       return SingleChildScrollView(
                         child: Column(
                           children: [
@@ -149,7 +140,8 @@ class _MyHomePageState extends State<MyHomePage> {
   _showMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('No internet'),
+        backgroundColor: Colors.orange,
+        content: Text('No internet connection'),
       ),
     );
   }
@@ -203,3 +195,5 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 }
+
+

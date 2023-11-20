@@ -1,5 +1,7 @@
 import 'package:app_weather/core/models/weather.dart';
 import 'package:app_weather/core/viewmodel/weather_model.dart';
+import 'package:app_weather/widget/error_widget.dart';
+import 'package:app_weather/widget/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,23 +23,11 @@ class _LocationItemState extends State<LocationItem> {
         future: _getWeather(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: CircularProgressIndicator.adaptive(
-                  backgroundColor: Colors.white,
-                ),
-              ),
-            );
+            return const LoadingWidget();
           }
 
           if (snapshot.hasError) {
-            return const Center(
-              child: Text(
-                'An error occurrer',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            );
+            return const MyErrorWidget();
           }
 
           Weather weather = snapshot.data;
@@ -66,7 +56,7 @@ class _LocationItemState extends State<LocationItem> {
                           children: [
                             Text(
                               widget.location,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 24,
                                 color: Colors.white,
@@ -74,7 +64,7 @@ class _LocationItemState extends State<LocationItem> {
                             ),
                             Text(
                               weather.currentConditions.conditions,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 16,
                                 color: Colors.white,
@@ -85,19 +75,8 @@ class _LocationItemState extends State<LocationItem> {
                       ),
                       Image.asset(
                           'assets/icons/${weather.currentConditions.icon}.png'),
-                      // Text(
-                      //   '⛅',
-                      //   style: TextStyle(
-                      //     fontWeight: FontWeight.w500,
-                      //     fontSize: 50,
-                      //     color: Colors.white,
-                      //   ),
-                      // ),
                     ],
                   ),
-                  // SizedBox(
-                  //   height: 15,
-                  // ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -108,7 +87,7 @@ class _LocationItemState extends State<LocationItem> {
                           children: [
                             Row(
                               children: [
-                                Text(
+                                const Text(
                                   'Humidity',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w300,
@@ -116,10 +95,10 @@ class _LocationItemState extends State<LocationItem> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Text(
                                   weather.currentConditions.humidity,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16,
                                     color: Colors.white,
@@ -130,7 +109,7 @@ class _LocationItemState extends State<LocationItem> {
                             // SizedBox(height: 10),
                             Row(
                               children: [
-                                Text(
+                                const Text(
                                   'Wind',
                                   style: TextStyle(
                                     fontWeight: FontWeight.w300,
@@ -138,10 +117,10 @@ class _LocationItemState extends State<LocationItem> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Text(
                                   ' ${weather.currentConditions.windspeed}km/h',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16,
                                     color: Colors.white,
@@ -158,13 +137,13 @@ class _LocationItemState extends State<LocationItem> {
                         children: [
                           Text(
                             weather.currentConditions.temp,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Colors.white,
                               fontSize: 48,
                             ),
                           ),
-                          Positioned(
+                          const Positioned(
                             right: -30,
                             top: 0,
                             child: Text(
@@ -178,7 +157,7 @@ class _LocationItemState extends State<LocationItem> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       )
                     ],
