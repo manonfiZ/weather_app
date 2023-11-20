@@ -1,4 +1,4 @@
-import 'package:app_weather/configs/storage_manager.dart';
+import 'package:app_weather/core/configs/storage_manager.dart';
 import 'package:flutter/material.dart';
 
 class LocationModel extends ChangeNotifier {

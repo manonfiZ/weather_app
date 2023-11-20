@@ -7,7 +7,7 @@ import 'package:app_weather/screens/home/home.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:app_weather/configs/storage_manager.dart';
+import 'package:app_weather/core/configs/storage_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

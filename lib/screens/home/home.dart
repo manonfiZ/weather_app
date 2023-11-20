@@ -8,7 +8,7 @@ import 'package:app_weather/screens/home/_partials/date_section.dart';
 import 'package:app_weather/screens/home/_partials/details_section.dart';
 import 'package:app_weather/screens/home/_partials/header.dart';
 import 'package:app_weather/screens/home/_partials/week_section.dart';
-import 'package:app_weather/services/location_service.dart';
+import 'package:app_weather/core/services/location_service.dart';
 import 'package:app_weather/widget/error_widget.dart';
 import 'package:app_weather/widget/loading_widget.dart';
 import 'package:app_weather/widget/no_internet_widget.dart';
