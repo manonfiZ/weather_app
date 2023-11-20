@@ -1,5 +1,5 @@
 
-import 'package:app_weather/screens/locations.dart';
+import 'package:app_weather/screens/locations/locations.dart';
 import 'package:flutter/material.dart';
 
 class ScreenHeader extends StatelessWidget {

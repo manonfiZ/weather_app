@@ -9,13 +9,9 @@ class WeatherModel extends ChangeNotifier {
 
   Future<Weather?> getWeather(String location) async {
     try {
-
       Weather?  weather = await WeatherRepository.fetchWeather(location);
-
       return weather;
-      
     } catch (e) {
-
       debugPrint('Error ---------> ${e.toString()}');
       rethrow;
     }
