@@ -5,7 +5,8 @@ class LocationModel extends ChangeNotifier {
   List<String> get locations =>
       StorageManager.preferences?.getStringList('locations') ?? [];
 
-  String get location => StorageManager.preferences?.getString('location') ?? '';
+  String get location =>
+      StorageManager.preferences?.getString('location') ?? locations.last;
 
   void updateLocation(String newLocation) async {
     await StorageManager.preferences?.setString('location', newLocation);

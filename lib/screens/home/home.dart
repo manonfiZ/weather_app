@@ -3,20 +3,11 @@ import 'dart:async';
 import 'package:app_weather/core/models/weather.dart';
 import 'package:app_weather/core/viewmodel/location_model.dart';
 import 'package:app_weather/core/viewmodel/weather_model.dart';
-import 'package:app_weather/screens/home/_partials/condition_section.dart';
-import 'package:app_weather/screens/home/_partials/date_section.dart';
-import 'package:app_weather/screens/home/_partials/details_section.dart';
-import 'package:app_weather/screens/home/_partials/header.dart';
-import 'package:app_weather/screens/home/_partials/week_section.dart';
+import 'package:app_weather/screens/home/_partials/home_content.dart';
 import 'package:app_weather/core/services/location_service.dart';
-import 'package:app_weather/widget/error_widget.dart';
-import 'package:app_weather/widget/loading_widget.dart';
-import 'package:app_weather/widget/no_internet_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -31,38 +22,23 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
 
   String? _currentAddress;
-  bool _isConnected = false;
-  StreamSubscription<InternetConnectionStatus>? listener;
 
   @override
   void initState() {
     super.initState();
 
-    listener = InternetConnectionChecker().onStatusChange.listen((status) {
-      switch (status) {
-        case InternetConnectionStatus.connected:
-          print('Data connection is available.');
-          _isConnected = true;
-          break;
-        case InternetConnectionStatus.disconnected:
-          _isConnected = false;
-          _showMessage();
-          print('You are disconnected from the internet.');
-          break;
-      }
-    });
+    _init();
   }
 
   @override
   void dispose() {
     super.dispose();
-
-    listener?.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    print("----------------> ${_isConnected}");
+    final weatherModel = Provider.of<WeatherModel>(context, listen: true);
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -79,76 +55,16 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               color: Colors.black.withOpacity(.5),
             ),
-            !_isConnected
-                ? const NoInternetWidget()
-                : FutureBuilder(
-                    future: _init(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const LoadingWidget();
-                      }
-
-                      if (snapshot.hasError) {
-                        return  const MyErrorWidget();
-                      }
-
-                      Weather weather = snapshot.data;
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            ScreenHeader(
-                              location: weather.address,
-                            )
-                                .animate()
-                                .moveY(duration: 800.ms, begin: -50, end: 0)
-                                .fadeIn(duration: 800.ms),
-                            const SizedBox(height: 20),
-                            DateSection(
-                              date: weather.days.first.datetime,
-                              time: weather.currentConditions.datetime,
-                              tzoffset: weather.tzoffset,
-                            ).animate().fadeIn(duration: 800.ms),
-                            const SizedBox(height: 30),
-                            ConditionSection(
-                              icon: weather.currentConditions.icon,
-                              temperature: weather.currentConditions.temp,
-                              condition: weather.currentConditions.conditions,
-                            ).animate().fadeIn(duration: 800.ms),
-                            const SizedBox(height: 30),
-                            DetailSection(
-                              humidity: weather.currentConditions.humidity,
-                              feelsLike: weather.currentConditions.feelslike,
-                              windSpeed: weather.currentConditions.windspeed,
-                            ).animate().fadeIn(duration: 800.ms),
-                            const SizedBox(height: 30),
-                            WeekSection(daysData: weather.days.take(5).toList())
-                                .animate()
-                                .moveY(duration: 800.ms, begin: 50, end: 0)
-                                .fadeIn(duration: 800.ms),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+            HomeContent(weatherModel: weatherModel, onRefresh: _getWeather),
           ],
         ),
       ),
     );
   }
 
-  _showMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        backgroundColor: Colors.orange,
-        content: Text('No internet connection'),
-      ),
-    );
-  }
-
-  Future<Weather?> _init() async {
+  Future<void> _init() async {
     await _getCurrentPosition();
-    return await _getWeather();
+    await _getWeather();
   }
 
   Future<Weather?> _getWeather() async {
@@ -184,7 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ).then((List<Placemark> placemarks) {
       Placemark place = placemarks[0];
 
-      // print('=====> ${place.toJson()}');
       setState(() => _currentAddress = place.locality);
       LocationModel locationModel = Provider.of(context, listen: false);
 
@@ -195,5 +110,3 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 }
-
-
