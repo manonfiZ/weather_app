@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app_weather/core/models/weather.dart';
 import 'package:app_weather/core/viewmodel/location_model.dart';
@@ -77,20 +78,24 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _getCurrentPosition() async {
     LocationModel locationModel = Provider.of(context, listen: false);
 
-    if (locationModel.locations.isEmpty) {
-      final hasPermission =
-          await LocationService.handleLocationPermission(context);
+    if (Platform.isAndroid || Platform.isIOS) {
+      if (locationModel.locations.isEmpty) {
+        final hasPermission =
+            await LocationService.handleLocationPermission(context);
 
-      if (!hasPermission) return;
+        if (!hasPermission) return;
 
-      await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.high)
-          .then((Position position) {
-        _getAddressFromLatLng(position);
-      }).catchError((e) {
-        debugPrint(e);
-      });
+        await Geolocator.getCurrentPosition(
+                desiredAccuracy: LocationAccuracy.high)
+            .then((Position position) {
+          _getAddressFromLatLng(position);
+        }).catchError((e) {
+          debugPrint(e);
+        });
+      }
     }
+
+    locationModel.updateLocation('London');
   }
 
   Future<void> _getAddressFromLatLng(Position position) async {
