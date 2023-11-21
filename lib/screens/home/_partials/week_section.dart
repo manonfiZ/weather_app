@@ -1,3 +1,4 @@
+import 'dart:ui';
 
 import 'package:app_weather/core/models/weather.dart';
 import 'package:app_weather/utils/utils.dart';
@@ -13,30 +14,42 @@ class WeekSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    daysData.removeAt(0);  // ! Remove today
+    daysData.removeAt(0); // ! Remove today
     return Container(
       margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(10),
-      decoration: const BoxDecoration(
-        color: Color(0xFF535353),
-        borderRadius: BorderRadius.all(
+      decoration: BoxDecoration(
+        color: const Color(0xFF535353).withOpacity(0.8),
+        borderRadius: const BorderRadius.all(
           Radius.circular(30),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ...daysData.map(
-            (data) => Expanded(
-              child: WeekItem(
-                icon: data.icon,
-                day: MyDateUtils.formatStringDate(data.datetime, format: 'E d'),
-                temperature: data.temp,
-                wind: '${data.windspeed} - ${data.windgust}',
-              ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 20,
+            sigmaY: 20,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ...daysData.map(
+                  (data) => Expanded(
+                    child: WeekItem(
+                      icon: data.icon,
+                      day: MyDateUtils.formatStringDate(data.datetime,
+                          format: 'E d'),
+                      temperature: data.temp,
+                      wind: '${data.windspeed} - ${data.windgust}',
+                    ),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -101,4 +114,3 @@ class WeekItem extends StatelessWidget {
     );
   }
 }
-
