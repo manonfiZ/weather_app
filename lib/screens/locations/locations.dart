@@ -1,11 +1,9 @@
-import 'dart:ui';
-
 import 'package:app_weather/core/viewmodel/location_model.dart';
 import 'package:app_weather/screens/home/home.dart';
 import 'package:app_weather/screens/locations/_partials/add_location_button.dart';
 import 'package:app_weather/screens/locations/_partials/location_item.dart';
+import 'package:app_weather/screens/locations/_partials/locations_header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:provider/provider.dart';
 
 class MyLocations extends StatefulWidget {
@@ -46,7 +44,7 @@ class _MyLocationsState extends State<MyLocations> {
                 return SingleChildScrollView(
                   child: Column(
                     children: [
-                      const ScreenHeader(),
+                      const LocationsScreenHeader(),
                       ...model.locations.map((location) {
                         return GestureDetector(
                           onTap: () {
@@ -120,40 +118,5 @@ class _MyLocationsState extends State<MyLocations> {
         Provider.of<LocationModel>(context, listen: false);
 
     locationModel.addNewLocation(location);
-  }
-}
-
-
-class ScreenHeader extends StatelessWidget {
-  const ScreenHeader({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // color: Colors.red,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15.0,
-        vertical: 15,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            'Saved Locations',
-            style: TextStyle(fontSize: 16, color: Colors.white),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              PhosphorIcons.magnifying_glass,
-              color: Colors.white,
-              size: 32,
-            ),
-          )
-        ],
-      ),
-    );
   }
 }

@@ -20,8 +20,14 @@ class LocationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? search(String location) {
-    return locations.firstWhere((element) => element == location,
-        orElse: () => '');
+  List<String> search(String location) {
+    var r = locations
+        .where(
+            (element) => element.toLowerCase().contains(location.toLowerCase()))
+        .toList();
+
+    print('Result => $r');
+
+    return r;
   }
 }
