@@ -18,8 +18,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  bool switchValue = false;
-  int currentIndex = 0;
+  String? _image;
 
   String? _currentAddress;
 
@@ -28,7 +27,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _getCurrentPosition();
+      _init();
     });
   }
 
@@ -47,13 +46,21 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         child: Stack(
           children: [
             Container(
-              // color: Colors.red,
-              child: Image.asset(
-                'assets/images/london.png',
-                alignment: Alignment.center,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+              child: _image != null
+                  ? Image.network(
+                      _image!,
+                      alignment: Alignment.center,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      height: MediaQuery.of(context).size.height,
+                    )
+                  : Image.asset(
+                      'assets/images/london.png',
+                      alignment: Alignment.center,
+                      width: double.infinity,
+                      height: MediaQuery.of(context).size.height,
+                      fit: BoxFit.cover,
+                    ),
             ),
             Container(
               color: Colors.black.withOpacity(.5),
@@ -69,8 +76,27 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     );
   }
 
+  _init() async {
+    await _getCurrentPosition();
+    await _fetchImage();
+  }
+
+  Future<String?> _fetchImage() async {
+    LocationModel locationModel = Provider.of(context, listen: false);
+
+    String? image =
+        await locationModel.getLocationImage(locationModel.location!);
+
+    setState(() {
+      _image = image;
+    });
+    return null;
+  }
+
   Future<void> _getCurrentPosition() async {
     LocationModel locationModel = Provider.of(context, listen: false);
+
+    locationModel.getLocationImage(locationModel.location ?? '');
 
     if (Platform.isAndroid || Platform.isIOS) {
       if (locationModel.locations.isEmpty) {

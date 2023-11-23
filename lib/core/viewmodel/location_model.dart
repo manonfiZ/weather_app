@@ -1,4 +1,5 @@
 import 'package:app_weather/core/configs/storage_manager.dart';
+import 'package:app_weather/core/repositories/location_repository.dart';
 import 'package:flutter/material.dart';
 
 class LocationModel extends ChangeNotifier {
@@ -26,5 +27,14 @@ class LocationModel extends ChangeNotifier {
         .toList();
 
     return r;
+  }
+
+  Future<String?> getLocationImage(String location) async {
+    try {
+      return await LocationRepository.fetchLocationImage(location);
+    } catch (e) {
+      debugPrint('Error ---------> ${e.toString()}');
+      return null;
+    }
   }
 }
