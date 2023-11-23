@@ -17,13 +17,14 @@ class _AddLocationDialogState extends State<AddLocationDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       title: const Text("New location"),
       content: TextFormField(
         key: _locationKey,
         onChanged: (value) {
           _location = value;
         },
-        validator: (value) => value!.isEmpty ? 'Name cannot be empty' : null,
+        validator: (value) => value!.isEmpty ? 'Locality' : null,
         decoration: const InputDecoration(
           label: Text('Name'),
         ),
@@ -42,7 +43,7 @@ class _AddLocationDialogState extends State<AddLocationDialog> {
               Navigator.pop(context);
             }
           },
-          child: const Text('Submit'),
+          child: const Text('Save'),
         ),
       ],
     );
@@ -53,5 +54,6 @@ class _AddLocationDialogState extends State<AddLocationDialog> {
         Provider.of<LocationModel>(context, listen: false);
 
     locationModel.addNewLocation(location);
+    locationModel.updateLocation(location);
   }
 }

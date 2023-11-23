@@ -24,9 +24,18 @@ class MyErrorWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: onPressed,
-            child: const Text(
-              'Retry',
-              //   style: TextStyle(color: Colors.white),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.refresh),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  'Retry',
+                  //   style: TextStyle(color: Colors.white),
+                ),
+              ],
             ),
           )
         ],

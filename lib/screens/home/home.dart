@@ -5,6 +5,7 @@ import 'package:app_weather/core/services/location_service.dart';
 import 'package:app_weather/core/viewmodel/location_model.dart';
 import 'package:app_weather/screens/home/_partials/home_content.dart';
 import 'package:app_weather/screens/locations/_partials/add_location_dialog.dart';
+import 'package:app_weather/screens/locations/locations.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -67,8 +68,49 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             ),
             locationModel.location != null
                 ? const HomeContent()
-                : const Center(
-                    child: CircularProgressIndicator(),
+                : SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Text(
+                              'No location saved, please add new one by clicking on the button bellow.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .fontSize,
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MyLocations(),
+                                ),
+                              );
+                            },
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Go to locations'),
+                                Icon(
+                                  Icons.arrow_right,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
           ],
         ),
@@ -84,26 +126,31 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Future<String?> _fetchImage() async {
     LocationModel locationModel = Provider.of(context, listen: false);
 
+    if (locationModel.location == null) return null;
+
     String? image =
         await locationModel.getLocationImage(locationModel.location!);
 
     setState(() {
       _image = image;
     });
-    return null;
+
+    return image;
   }
 
   Future<void> _getCurrentPosition() async {
     LocationModel locationModel = Provider.of(context, listen: false);
-
-    locationModel.getLocationImage(locationModel.location ?? '');
 
     if (Platform.isAndroid || Platform.isIOS) {
       if (locationModel.locations.isEmpty) {
         final hasPermission =
             await LocationService.handleLocationPermission(context);
 
-        if (!hasPermission) return;
+        if (!hasPermission) {
+          // * Show dialog for user to add new location
+          _showNewLocationDialog();
+          return;
+        }
 
         await Geolocator.getCurrentPosition(
                 desiredAccuracy: LocationAccuracy.high)
@@ -116,12 +163,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     } else {
       // ! GeoLocator is not enabled on web, linux and macos
       if (locationModel.location == null) {
-        showDialog(
-            context: context, builder: (context) => const AddLocationDialog());
-
-        // setState(() {});
+        // * Show dialog for user to add new location
+        _showNewLocationDialog();
+        return;
       }
     }
+  }
+
+  _showNewLocationDialog() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => const AddLocationDialog());
   }
 
   Future<void> _getAddressFromLatLng(Position position) async {
