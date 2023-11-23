@@ -35,6 +35,6 @@ class DateSection extends StatelessWidget {
   }
 
   String _formatTZ(double value) {
-    return '${value > 0 ? "+" : ''} ${value.toStringAsFixed(0)}';
+    return '${value >= 0 ? "+" : ''} ${value.toStringAsFixed(0)}';
   }
 }
