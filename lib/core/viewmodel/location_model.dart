@@ -5,15 +5,14 @@ class LocationModel extends ChangeNotifier {
   List<String> get locations =>
       StorageManager.preferences?.getStringList('locations') ?? [];
 
-  String get location =>
-      StorageManager.preferences?.getString('location') ?? locations.last;
+  String? get location => StorageManager.preferences?.getString('location');
 
-  void updateLocation(String newLocation) async {
+  Future<void> updateLocation(String newLocation) async {
     await StorageManager.preferences?.setString('location', newLocation);
     notifyListeners();
   }
 
-  void addNewLocation(String location) async {
+  Future<void> addNewLocation(String location) async {
     List<String> locations = this.locations..add(location);
 
     await StorageManager.preferences?.setStringList('locations', locations);
@@ -25,8 +24,6 @@ class LocationModel extends ChangeNotifier {
         .where(
             (element) => element.toLowerCase().contains(location.toLowerCase()))
         .toList();
-
-    print('Result => $r');
 
     return r;
   }

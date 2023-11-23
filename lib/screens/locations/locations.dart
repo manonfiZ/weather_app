@@ -1,6 +1,7 @@
 import 'package:app_weather/core/viewmodel/location_model.dart';
 import 'package:app_weather/screens/home/home.dart';
 import 'package:app_weather/screens/locations/_partials/add_location_button.dart';
+import 'package:app_weather/screens/locations/_partials/add_location_dialog.dart';
 import 'package:app_weather/screens/locations/_partials/location_item.dart';
 import 'package:app_weather/screens/locations/_partials/locations_header.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +15,6 @@ class MyLocations extends StatefulWidget {
 }
 
 class _MyLocationsState extends State<MyLocations> {
-  String? _location;
-  final _locationKey = GlobalKey<FormFieldState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,45 +76,8 @@ class _MyLocationsState extends State<MyLocations> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("New location"),
-          content: TextFormField(
-            key: _locationKey,
-            onChanged: (value) {
-              _location = value;
-            },
-            validator: (value) =>
-                value!.isEmpty ? 'Name cannot be empty' : null,
-            decoration: const InputDecoration(
-              label: Text('Name'),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (_locationKey.currentState!.validate()) {
-                  _addLocation(_location!);
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Submit'),
-            ),
-          ],
-        );
+        return const AddLocationDialog();
       },
     );
-  }
-
-  _addLocation(String location) {
-    LocationModel locationModel =
-        Provider.of<LocationModel>(context, listen: false);
-
-    locationModel.addNewLocation(location);
   }
 }

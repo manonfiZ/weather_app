@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:app_weather/core/models/weather.dart';
-import 'package:app_weather/core/viewmodel/location_model.dart';
-import 'package:app_weather/core/viewmodel/weather_model.dart';
-import 'package:app_weather/screens/home/_partials/home_content.dart';
 import 'package:app_weather/core/services/location_service.dart';
+import 'package:app_weather/core/viewmodel/location_model.dart';
+import 'package:app_weather/screens/home/_partials/home_content.dart';
+import 'package:app_weather/screens/locations/_partials/add_location_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -18,7 +17,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool switchValue = false;
   int currentIndex = 0;
 
@@ -27,18 +26,21 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
-    _init();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _getCurrentPosition();
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
   Widget build(BuildContext context) {
-    final weatherModel = Provider.of<WeatherModel>(context, listen: true);
+    LocationModel locationModel = Provider.of(context, listen: true);
 
     return Scaffold(
       body: SafeArea(
@@ -56,23 +58,15 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               color: Colors.black.withOpacity(.5),
             ),
-            HomeContent(weatherModel: weatherModel, onRefresh: _getWeather),
+            locationModel.location != null
+                ? const HomeContent()
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> _init() async {
-    await _getCurrentPosition();
-    await _getWeather();
-  }
-
-  Future<Weather?> _getWeather() async {
-    WeatherModel weatherModel = Provider.of(context, listen: false);
-    LocationModel locationModel = Provider.of(context, listen: false);
-
-    return await weatherModel.getWeather(locationModel.location);
   }
 
   Future<void> _getCurrentPosition() async {
@@ -93,9 +87,15 @@ class _MyHomePageState extends State<MyHomePage> {
           debugPrint(e);
         });
       }
-    }
+    } else {
+      // ! GeoLocator is not enabled on web, linux and macos
+      if (locationModel.location == null) {
+        showDialog(
+            context: context, builder: (context) => const AddLocationDialog());
 
-    locationModel.updateLocation('London');
+        // setState(() {});
+      }
+    }
   }
 
   Future<void> _getAddressFromLatLng(Position position) async {
